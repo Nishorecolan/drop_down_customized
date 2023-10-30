@@ -255,14 +255,13 @@ class _ContactUsState extends State<ContactUs> {
 
   Widget policyDropDownBox() {
     return SizedBox(
-        height: 45,
+        height: 65,
 
         child: LayoutBuilder(
             builder: (context, constraints) => CustomizeDropdown(
                 context,
                 dropdownItems: policies.map((category) => category['name'].toString()).toList(),
                controller: selectedPolicyController,
-
                hintText: 'Select a policy',
                width: double.infinity,
                 optionsViewBuilder: (BuildContext context,

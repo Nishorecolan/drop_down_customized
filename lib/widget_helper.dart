@@ -1,4 +1,5 @@
 import 'dart:async';
+// import 'dart:html';
 
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ Widget CustomizeDropdown(
       onSubmitted,onSelected,double? width,TextEditingController? controller,
       Widget Function(BuildContext, TextEditingController, FocusNode, void Function())? fieldViewBuilder,
       String? helperText,String? Function(String?)? validation,double? height,bool? isEnable,fillColor,
-      displayText,focusNode,List<String>? dropdownItems,double? dropdownHeight, inputFormatters}) {
+      displayText,focusNode,List<String>? dropdownItems,double? dropdownHeight, inputFormatters, isSubmitClicked = false}) {
   FocusNode focusNode = FocusNode();
   String storedData = '';
   bool fieldValidation= false;
@@ -21,6 +22,9 @@ Widget CustomizeDropdown(
   // if(kIsWeb){
   //   hintData='';
   // }
+  print(controller!.text.isEmpty && isSubmitClicked);
+  print(controller!.text);
+  print(isSubmitClicked);
   return StatefulBuilder(
       builder: (context,setState) {
         focusNode.addListener(() {
@@ -31,7 +35,7 @@ Widget CustomizeDropdown(
         return Container(
           // width: width ?? getScreenWidth(context) * 0.90,
             width: double.infinity,
-            decoration: BoxDecoration(),
+            decoration: BoxDecoration(border: Border.all(color: controller!.text.isEmpty && isSubmitClicked ? Color(0xffC02321) : Colors.black)),
             child: Autocomplete(
 
                 optionsBuilder: optionsBuilder ?? (TextEditingValue textEditingValue) {
@@ -39,13 +43,14 @@ Widget CustomizeDropdown(
                     return emptyDataList;
                   }
                   if(textEditingValue.text.isEmpty && dropdownItems.isNotEmpty) {
-                    return dropdownItems.where((element) => element.toLowerCase().toString().contains(textEditingValue.text.toLowerCase()));
+                   return dropdownItems.where((element) => element.toLowerCase().toString().contains(textEditingValue.text.toLowerCase()));
                   }
                   if(dropdownItems.where((element) => element.toLowerCase().toString().contains(textEditingValue.text.toLowerCase())).isEmpty)  {
-                    return emptyDataList;
+                   return emptyDataList;
                   } else {
-                    return dropdownItems.where((element) => element.toLowerCase().toString().contains(textEditingValue.text.toLowerCase()));
+                   return dropdownItems.where((element) => element.toLowerCase().toString().contains(textEditingValue.text.toLowerCase()));
                   }
+                  //return [''];
                 },
                 displayStringForOption: displayStringForOption ?? (option) => '$option',
                 fieldViewBuilder: fieldViewBuilder ?? (BuildContext context,
@@ -77,9 +82,7 @@ Widget CustomizeDropdown(
                   //widthController.text = getScreenWidth(context).toString();
                   fieldTextEditingController.addListener(() {
                     if(dropdownItems!.contains(fieldTextEditingController.text)){
-
                       focusNode.unfocus();
-
                     }
                   });
                   return Container(
@@ -153,42 +156,63 @@ Widget CustomizeDropdown(
                         focusNode: fieldFocusNode,
                         inputFormatters: inputFormatters ?? [],
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator:  fieldValidation?(value){return null;}:validation ??
-
-                                (value) {
-                              if (value == null || value.isEmpty) {
-                                return fieldValidation?null:'field is required';
-                              }
-                              return null;
-                            },
+                        // validator:  fieldValidation?(value){return null;}:validation ??
+                        //
+                        //         (value) {
+                        //       if (value == null || value.isEmpty) {
+                        //         return fieldValidation?null:'field is required';
+                        //       }
+                        //       return null;
+                        //     },
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Field is required';
+                        //   }
+                        //   return null; // Return null to indicate no error
+                        // },
 
                         decoration: InputDecoration(
                           helperText: helperText,
-                          contentPadding: EdgeInsets.all(12),
+                          // contentPadding: EdgeInsets.only(left: 15,top: 8,bottom: 12),
+                          contentPadding: EdgeInsets.all(17),
+                          isDense: true,
+                          // contentPadding: EdgeInsets.only(top: 18,bottom: 18,left: 20),
+                          // contentPadding: EdgeInsets.symmetric(vertical: 15,horizontal: 20), // Adjust the vertical padding as needed
+
                           // hintText: storedData.isNotEmpty ? storedData : 'select',
-                          hintText: hintText,
+                          // hintText: hintText,
+                         labelText: hintText,
+                          labelStyle: TextStyle(color: controller!.text.isEmpty && isSubmitClicked ? Color(0xffC02321) :  Color(0xff58656D)),
                           //   hintStyle: hintStyle(context),
                           errorMaxLines: 4,
                           // errorStyle: focusNode.hasFocus?TextStyle(height: 0.1,fontSize: 0.1,color: Colors.transparent):TextStyle(color: errorTextField,
                           //     fontSize: 11.5,fontWeight: FontWeight.w500),
                           // errorBorder: OutlineInputBorder(
-                          //     borderSide: BorderSide(color: errorTextField),
+                          //     borderSide: BorderSide(color: Colors.red),
                           //     borderRadius: BorderRadius.circular(5)),
                           // focusedErrorBorder: OutlineInputBorder(
-                          //     borderSide: BorderSide(color: errorTextField),
+                          //     borderSide: BorderSide(color: Colors.blue),
                           //     borderRadius: BorderRadius.circular(5)),
                           // focusedBorder: OutlineInputBorder(
-                          //     borderSide: BorderSide(color: hanBlueTint500),
+                          //     borderSide: BorderSide(color: Colors.green),
                           //     borderRadius: BorderRadius.circular(5)),
                           // enabledBorder: OutlineInputBorder(
-                          //     borderSide: BorderSide(color: fieldBorderColorNew)),
+                          //     borderSide: BorderSide(color: Colors.yellow)),
                           // disabledBorder: OutlineInputBorder(
-                          //     borderSide: BorderSide(color: fieldBorderColorNew)),
+                          //     borderSide: BorderSide(color: Colors.orange)),
                           fillColor: fillColor ?? Colors.white,
                           filled: true,
                           hoverColor: Colors.white,
-                          border: OutlineInputBorder(),
-                          suffixIcon: Padding(
+                          // border: OutlineInputBorder(),
+                          border: InputBorder.none,
+                          suffixIcon: fieldValidation ? Padding(
+                            padding: const EdgeInsets.only(right: 19.0),
+                            child: RotatedBox(
+                              quarterTurns: 2,
+                              child: Image.asset('assets/arrow-down.png',
+                                color: Color(0xff292D32), width: 10, height: 20,),
+                            ),
+                          ) : Padding(
                             padding: const EdgeInsets.only(right: 19.0),
                             child: Image.asset('assets/arrow-down.png',
                               color: Color(0xff292D32), width: 10, height: 20,),
@@ -228,7 +252,10 @@ Widget buildDropDownContainer(BuildContext context,
         child: Container(
           width: dropDownWidth ?? constraints.biggest.width,
           height: dropDownHeight,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black38),color: Colors.white70),
+          // height: 20,
+          decoration: BoxDecoration(border: Border.all(color: Colors.black38),
+           //color: Color(0xffF5F8FA),
+          ),
           child: ListView.builder(
             controller: scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
@@ -236,10 +263,15 @@ Widget buildDropDownContainer(BuildContext context,
             itemCount: options.length,
             itemBuilder: (BuildContext context, int index) {
               var option = options.elementAt(index);
+
               return InkWell(
-                //   hoverColor:  option == S.of(context).noDataFound ? Colors.transparent : Colors.grey.shade300,
+                  // hoverColor:  option == 'no Data Found' ? Colors.transparent : Colors.red.shade300,
+                  //hoverColor:   Colors.red,
+                  //hoverColor:  isHovered == true ? Colors.red :Colors.yellow,
+               // highlightColor: Colors.yellow,
                 //  highlightColor: option == S.of(context).noDataFound ? Colors.transparent : null,
                 //  splashColor: option == S.of(context).noDataFound ? Colors.transparent : null,
+                // splashColor: Colors.red.shade300,
                 onTap: () {
                   if(option == 'No Data Found') {
 
@@ -248,6 +280,9 @@ Widget buildDropDownContainer(BuildContext context,
                     onSelected(option);
                   }
 
+                },
+                onHover: (val) {
+                   // isHovered = val;
                 },
                 //  mouseCursor:  option == S.of(context).noDataFound ? SystemMouseCursors.none : SystemMouseCursors.click,
                 child: Container(

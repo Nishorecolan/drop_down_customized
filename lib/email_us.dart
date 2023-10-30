@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:ui_sample/widget_helper.dart';
 
-class EmailUs extends StatelessWidget {
+class EmailUs extends StatefulWidget {
    EmailUs({super.key});
 
+  @override
+  State<EmailUs> createState() => _EmailUsState();
+}
+
+class _EmailUsState extends State<EmailUs> {
   var categories = ['College','University','Diplomo'];
+
    TextEditingController selectedPolicyController = TextEditingController();
+   TextEditingController selectedTopicController = TextEditingController();
+   TextEditingController selectedMethodController = TextEditingController();
+
+
+   bool isSubmitClicked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,78 +36,111 @@ class EmailUs extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 1,
       ),
-        body: SingleChildScrollView(
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomLeft,
-                colors: [
-                  Color.fromARGB(0, 255, 255, 255),
-                  Color.fromARGB(100, 133, 177, 232)
-                ],
+        body: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus!.unfocus(),
+          child: SingleChildScrollView(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Color.fromARGB(0, 255, 255, 255),
+                    Color.fromARGB(100, 133, 177, 232)
+                  ],
+                ),
               ),
-            ),
-            child: Padding(
-              padding:
-                  const EdgeInsets.only(right: 15.0, left: 15.0, bottom: 15.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 50),
-                  buildText(
-                      name: 'Let\'s get in touch.',
-                      fontColor: Color(0xff0D3C59),
-                      fontFamily: 'Alda Pro',
-                      fontSize: 28),
-                  const SizedBox(height: 15),
-                  Padding(
-                      padding: const EdgeInsets.all(10),
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(right: 15.0, left: 15.0, bottom: 15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 50),
+                    Align(
+                      alignment: Alignment.center,
                       child: buildText(
-                          name:
-                              'Use the contact form below and we’ll have the right person respond to you.', fontColor: Color(0xff58656D))),
-                  const SizedBox(height: 35),
-                  buildDropdownField(hintText: 'Select a Policy'),
-                  const SizedBox(height: 30),
-                  buildDropdownField(hintText: 'Select a Topic'),
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 15.0, bottom: 8),
-                    child: TextField(
-                      maxLines: 5,
-                      maxLength: 2000,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: 'Enter your message here.',
-                          border: OutlineInputBorder()),
+                          name: 'Let\'s get in touch.',
+                          fontColor: const Color(0xff0D3C59),
+                          fontFamily: 'Alda Pro',
+                          fontSize: 28),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  buildDropdownField(hintText: 'Preferred Contact Method'),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 60.0, bottom: 30, right: 8, left: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                       //   action: SnackBarAction(label: 'Value', onPressed: () {  },),
-                            dismissDirection: DismissDirection.up,
-                            content: Text('Submit button Pressed')));
-                      },
-                      child: Container(
-                        height: 50,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade700,
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Center(
-                            child:
-                                buildText(name: 'Submit', fontColor: Color(0xffFFFFFF), fontWeight: FontWeight.w500, fontSize: 16)),
+                    const SizedBox(height: 15),
+                    Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: buildText(
+                            name:
+                                'Use the contact form below and we’ll have the right person respond to you.', fontColor: const Color(0xff58656D))),
+                    const SizedBox(height: 35),
+                    buildDropdownField(hintText: 'Select a Policy', controller: selectedPolicyController),
+                    if(selectedPolicyController.text.isEmpty && isSubmitClicked)
+                      Column(
+                        children: [
+                          Padding(padding: const EdgeInsets.only(top: 10),child: buildText(name: 'policy is required', fontColor: const Color(0xffC02321), fontSize: 12),),
+                        ],
+                      ),
+                    const SizedBox(height: 30),
+                    buildDropdownField(hintText: 'Select a Topic', controller: selectedTopicController),
+                    if(selectedTopicController.text.isEmpty && isSubmitClicked)
+                      Column(
+                        children: [
+                          Padding(padding: const EdgeInsets.only(top: 10),child: buildText(name: 'topic is required', fontColor: const Color(0xffC02321), fontSize: 12),),
+                        ],
+                      ),
+                    const SizedBox(height:  20),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 15.0, bottom: 8),
+                      child: TextField(
+                        maxLines: 5,
+                        maxLength: 2000,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: 'Enter your message here.',
+                            border: OutlineInputBorder()),
                       ),
                     ),
-                  )
-                ],
+                    const SizedBox(height: 20),
+                    buildDropdownField(hintText: 'Preferred Contact Method', controller: selectedMethodController),
+                    if(selectedMethodController.text.isEmpty && isSubmitClicked)
+                      Column(
+                        children: [
+                          Padding(padding: const EdgeInsets.only(top: 10),child: buildText(name: 'Contact method is required', fontColor: const Color(0xffC02321), fontSize: 12),),
+                        ],
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 70.0, bottom: 100, right: 8, left: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isSubmitClicked = true;
+                          });
+                          // if(formKey.currentState!.validate()) {
+                          //
+                          // } else {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                //   action: SnackBarAction(label: 'Value', onPressed: () {  },),
+                                dismissDirection: DismissDirection.up,
+                                content: Text('Submit button Pressed')));
+                          //}
+
+                        },
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade700,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Center(
+                              child:
+                                  buildText(name: 'Submit', fontColor: const Color(0xffFFFFFF), fontWeight: FontWeight.w500, fontSize: 16)),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -137,14 +181,15 @@ class EmailUs extends StatelessWidget {
     );
   }
 
-   Widget buildDropdownField({hintText}) {
+   Widget buildDropdownField({hintText,controller}) {
      return SizedBox(
-         height: 50,
+         height: 65,
          child: LayoutBuilder(
              builder: (context, constraints) => CustomizeDropdown(
                  context,
+                 isSubmitClicked: isSubmitClicked,
                  dropdownItems: categories,
-                 controller: selectedPolicyController,
+                 controller: controller,
                  hintText: hintText,
                  width: double.infinity,
                  optionsViewBuilder: (BuildContext context,
@@ -166,13 +211,15 @@ class EmailUs extends StatelessWidget {
                    return null;
                  },
                  onChanged: (val) async {
-
                  },
                  onSelected: (val) {
                    print('seleccted $val');
                    // setState(() {
                    //   selectedPolicy = val;
                    // });
+                   setState(() {
+                     controller.text = val;
+                   });
                  },
                  onSubmitted: (val) {
                    // setState(() {
