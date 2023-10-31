@@ -9,7 +9,7 @@ Widget CustomizeDropdown(
     BuildContext context,
     {FutureOr<Iterable<Object>> Function(TextEditingValue)?  optionsBuilder,
       String Function(Object)? displayStringForOption,hintText,displayName,optionsViewBuilder,onChanged,
-      onSubmitted,onSelected,double? width,TextEditingController? controller,
+      onSubmitted,void Function(Object)? onSelected,double? width,TextEditingController? controller,
       Widget Function(BuildContext, TextEditingController, FocusNode, void Function())? fieldViewBuilder,
       String? helperText,String? Function(String?)? validation,double? height,bool? isEnable,fillColor,
       displayText,focusNode,List<String>? dropdownItems,double? dropdownHeight, inputFormatters, isSubmitClicked = false}) {
@@ -262,8 +262,11 @@ Widget buildDropDownContainer(BuildContext context,
             padding: EdgeInsets.all(10.0),
             itemCount: options.length,
             itemBuilder: (BuildContext context, int index) {
-              var option = options.elementAt(index);
-
+              // var option = options.elementAt(index);
+              String option = options.elementAt(index);
+              print('options are $option');
+              List<String> parts = option.split('#');
+              print(" option:==>"+parts.toString());
               return InkWell(
                   // hoverColor:  option == 'no Data Found' ? Colors.transparent : Colors.red.shade300,
                   //hoverColor:   Colors.red,
@@ -293,7 +296,9 @@ Widget buildDropDownContainer(BuildContext context,
                           SizedBox(height: 35),
                           Text(option),
                         ])
-                        : Text('${option}',style: TextStyle(fontSize: 16),)
+                        // : Text(option,style: TextStyle(fontSize: 16),)
+                        // : Text('${option.substring(0,option.length - 3)}',style: TextStyle(fontSize: 16),)
+                        : Text('${parts[0]}',style: TextStyle(fontSize: 16),)
                 ),
               );
             },

@@ -15,6 +15,7 @@ class _ContactUsState extends State<ContactUs> {
   var policies = [
     {
       'name': 'NYLIAC policy 1',
+      'number': '100',
       'policy': [
         {
           'agentName': 'Steve', 'email': 'steve@newyork.com', 'phno': '+1 (123) 456 7890'
@@ -28,24 +29,39 @@ class _ContactUsState extends State<ContactUs> {
       ]
     },
     {
+      'name': 'NYLIAC policy 1',
+      'number': '101',
+      'policy': [
+        {
+          'agentName': 'Steve', 'email': 'steve@newyork.com', 'phno': '+1 (123) 456 7890'
+        },
+        {
+          'agentName': 'Jame', 'email': 'Jame@newyork.com', 'phno': '+1 (123) 456 7890'
+        },
+      ]
+    },
+    {
       'name': 'NYLIAC policy 2',
+      'number': '102',
       'policy': [
         {
           'agentName': 'Steve','email': 'steve1@newyork.com', 'phno': '+1 (123) 456 7890'
         },
       ]
     },
-    {'name': 'NYLIAC policy 3', 'policy': []},
+    {'name': 'NYLIAC policy 3','number': '103', 'policy': []},
   ];
 
   final bool isPolicyAvailable = false;
   String? selectedPolicy;
+  String? selectedPolicyNumber;
   TextEditingController selectedPolicyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     selectedPolicy = policies[0]['name'].toString();
+    selectedPolicyNumber = policies[0]['number'].toString();
     selectedPolicyController.text = selectedPolicy!;
   }
 
@@ -88,7 +104,7 @@ class _ContactUsState extends State<ContactUs> {
                           policyDropDownBox(),
                           const SizedBox(height: 20),
                           for (var policy in policies)
-                            if (policy['name'] == selectedPolicy)
+                            if (policy['name'] == selectedPolicy && policy['number'] == selectedPolicyNumber)
                               if ((policy['policy'] as List).isEmpty)
                                 buildText(name: 'There are no agents assigned to this policy. Please see below for other ways to reach out.',
                                     textAlign: TextAlign.start, fontColor: Color(0xff58656D))
@@ -225,42 +241,20 @@ class _ContactUsState extends State<ContactUs> {
             color: fontColor));
   }
 
-  Widget buildDropdownField({hintText = 'Select one'}) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 15.0, bottom: 8),
-      child: DropdownButtonFormField<String>(
-          items: policies.map((category) {
-            return DropdownMenuItem<String>(
-              value: category['name'].toString(),
-              child: Text(category['name'].toString()),
-            );
-          }).toList(),
-          icon: const Icon(
-            Icons.keyboard_arrow_down_outlined,
-            size: 30,
-          ),
-          value: selectedPolicy,
-          decoration: InputDecoration(
-              errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 16.0),
-              hintText: hintText,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
-        onChanged: (String? value) {
-          setState(() {
-            selectedPolicy = value;
-          });
-        },
-      ),
-    );
-  }
+
 
   Widget policyDropDownBox() {
+    var policyNames = policies.map((category) => '${category['name']} #${category['number']}').toList();
+    print('policies are $policyNames');
+
     return SizedBox(
         height: 65,
 
         child: LayoutBuilder(
             builder: (context, constraints) => CustomizeDropdown(
                 context,
-                dropdownItems: policies.map((category) => category['name'].toString()).toList(),
+                dropdownItems: policyNames,
+                // dropdownItems: policies,
                controller: selectedPolicyController,
                hintText: 'Select a policy',
                width: double.infinity,
@@ -270,7 +264,8 @@ class _ContactUsState extends State<ContactUs> {
                     context,
                     options: options,
                     onSelected: onSelected,
-                    dropdownData: policies.map((category) => category['name'].toString()).toList(),
+                    // dropdownData: policies.map((category) => category['name'].toString()).toList(),
+                    dropdownData: policyNames,
                     constraints: constraints,
                     dropDownHeight: options.first == 'No Data Found'
                         ? 150
@@ -286,17 +281,85 @@ class _ContactUsState extends State<ContactUs> {
 
                 },
                 onSelected: (val) {
-                  print('seleccted $val');
-                  setState(() {
-                    selectedPolicy = val;
-                  });
-                  },
+                  String selectedValue = val.toString(); // Ensure it's treated as a string
+                  print('selected data $selectedValue');
+
+                  List<String> parts = selectedValue.split('#');
+                  print("selectedPolicy :==>"+parts.toString());
+                  if (parts.length >= 3) {
+                    setState(() {
+                      selectedPolicy = parts.take(parts.length - 1).join(' ');
+                      selectedPolicyNumber = parts.last;
+                      print('selected data $selectedPolicy');
+                      print('selected data $selectedPolicyNumber');
+                    });
+                  }
+
+
+
+                  // setState(() {
+                  //   selectedPolicy = val;
+                  //   // selectedPolicyNumber = '101';
+                  //   // for (var policy in policies) {
+                  //   //   if (policy['name'] == selectedPolicy) {
+                  //   //     policy['number'] == selectedPolicyNumber;
+                  //   //   }
+                  //   // }
+                  //   selectedPolicyNumber = policies[policyNames.indexOf(val)]['number'].toString();
+                  //
+                  // });
+                  // for (int i = 0; i < policies.length; i++) {
+                  //   if (policies[i]['name'] == val) {
+                  //     setState(() {
+                  //       selectedPolicyNumber = policies[i]['number'] as String?;
+                  //       print('Selected policy number: $selectedPolicyNumber (Index $i)');
+                  //     });
+                  //
+                  //     break; // Exit the loop once found
+                  //   }
+                  // }
+                  // final int selectedIndex = policies.indexWhere((policy) => policy['name'] == val);
+                  // if (selectedIndex != -1) {
+                  //   setState(() {
+                  //     selectedPolicy = val;
+                  //     selectedPolicyNumber = policies[selectedIndex]['number'] as String?;
+                  //     print('Selected policy number: $selectedPolicyNumber (Index $selectedIndex)');
+                  //   });
+                  //
+                  // }
+
+                },
                 onSubmitted: (val) {
-                  setState(() {
-                    selectedPolicy = val;
-                  });
                 }
 
             )));
   }
+
+  //   Widget buildDropdownField({hintText = 'Select one'}) {
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 15.0, bottom: 8),
+//       child: DropdownButtonFormField<String>(
+//           items: policies.map((category) {
+//             return DropdownMenuItem<String>(
+//               value: category['name'].toString(),
+//               child: Text(category['name'].toString()),
+//             );
+//           }).toList(),
+//           icon: const Icon(
+//             Icons.keyboard_arrow_down_outlined,
+//             size: 30,
+//           ),
+//           value: selectedPolicy,
+//           decoration: InputDecoration(
+//               errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 16.0),
+//               hintText: hintText,
+//               border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+//         onChanged: (String? value) {
+//           setState(() {
+//             selectedPolicy = value;
+//           });
+//         },
+//       ),
+//     );
+//   }
 }
